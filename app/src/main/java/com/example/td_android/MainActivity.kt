@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.td_android.ui.AddTaskModel
+import com.example.td_android.ui.TaskForm
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
                     HomeScreen(navController)
                 }
                 composable("addTask") {
-                    AddTaskScreen(navController, AddTaskModel())
+                    AddTaskScreen(AddTaskModel())
                 }
             }
         }
@@ -70,29 +71,10 @@ fun HomeScreen(navController: NavController) {
 
 @Composable
 fun AddTaskScreen(
-    navController: NavController,
     addTaskModel: AddTaskModel
 ) {
     Surface(color = MaterialTheme.colorScheme.background) {
         TaskForm(addTaskModel = addTaskModel)
-    }
-}
-
-@Composable
-fun TaskForm(
-    addTaskModel: AddTaskModel,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier) {
-
-        Button(
-            onClick = { addTaskModel.createTask() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text("Create task")
-        }
     }
 }
 

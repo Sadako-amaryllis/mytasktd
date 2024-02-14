@@ -54,14 +54,15 @@ fun TaskForm(
     addTaskModel: AddTaskModel,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.padding(16.dp)) {
-
+    Column(modifier) {
 
         Button(
             onClick = { addTaskModel.createTask() },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
-            Text("Créer la tâche")
+            Text("Create task")
         }
     }
 }
