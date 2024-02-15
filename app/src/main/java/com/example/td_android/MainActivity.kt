@@ -22,6 +22,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.td_android.ui.AddTaskModel
 import com.example.td_android.ui.TaskForm
+import com.squareup.moshi.Json
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +46,41 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+}
+
+data class TaskResponse(
+    @Json(name = "tasks") val tasks: List<Task>
+)
+
+data class Task(
+    val id: Int,
+    val title: String,
+    val description: String
+)
+
+interface TaskApiService {
+    @Headers("Authorization: YOUR_API_KEY")
+    @GET("/api/tasks")
+    suspend fun getTasks(): TaskResponse
+}
+
+class TaskRepository {
+    private val apiService: TaskApiService
+
+    init {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://localhost:1337") // Use your actual base URL
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+
+        apiService = retrofit.create(TaskApiService::class.java)
+    }
+
+    suspend fun fetchTasks(): List<Task> = withContext(Dispatchers.IO) {
+        val taskResponse = apiService.getTasks()
+        println("Fetched tasks: ${taskResponse.tasks}") // Print fetched tasks for debugging
+        taskResponse.tasks
     }
 }
 
