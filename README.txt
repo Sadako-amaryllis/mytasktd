@@ -1,6 +1,3 @@
-
-Bien sûr ! Voici un exemple de Readme pour votre application de gestion de tâches en Kotlin utilisant Jetpack Compose :
-
 Application de Gestion de Tâches
 Cette application de gestion de tâches est développée en utilisant Kotlin et Jetpack Compose. Elle permet aux utilisateurs de créer, visualiser et gérer leurs tâches de manière intuitive et efficace.
 
