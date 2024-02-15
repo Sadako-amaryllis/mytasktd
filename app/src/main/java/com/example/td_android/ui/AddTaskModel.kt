@@ -1,10 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.example.td_android.ui
 
-import android.os.Build
 import android.util.Log
-import android.widget.CalendarView
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -37,7 +33,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.dateTimePicker
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -127,7 +122,7 @@ fun TaskForm(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp) // Hauteur de la ligne du bouton
+                    .height(56.dp)
             ) {
                 IconButton(
                     onClick = { openDialog.value = true },
@@ -164,36 +159,16 @@ fun TaskForm(
         }
 
         if (openDialog.value) {
-            AlertDialog(
-                onDismissRequest = { openDialog.value = false },
-                title = {
-                    MaterialDialog(context).show {
-                        dateTimePicker(requireFutureDateTime = true) { _, dateTime ->
-                            val selectedDateTime = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(dateTime)
-                            Log.d("SelectedDateTime", selectedDateTime)
+            MaterialDialog(context).show {
+                dateTimePicker(requireFutureDateTime = true) { _, dateTime ->
+                    val selectedDateTime =
+                        SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(dateTime)
+                    Log.d("SelectedDateTime", selectedDateTime)
 
-                            addTaskModel.setDeadline(selectedDateTime)
-                            openDialog.value = false
-                        }
-                    }
-                },
-                confirmButton = {
-                    Button(onClick = {
-                        openDialog.value = false
-                    }) {
-                        Text("OK")
-                    }
-                },
-                dismissButton = {
-                    Button(onClick = {
-                        openDialog.value = false
-                        selectedDate.value = null
-                    }) {
-                        Text("Annuler")
-                    }
-                },
-                text = {}
-            )
+                    addTaskModel.setDeadline(selectedDateTime)
+                    openDialog.value = false
+                }
+            }
         }
 
     }
