@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.AlertDialog
@@ -80,7 +81,6 @@ class AddTaskModel : ViewModel() {
         println("New Task Made: $task")
     }
 }
-
 @Composable
 fun TaskForm(
     addTaskModel: AddTaskModel,
@@ -100,7 +100,7 @@ fun TaskForm(
                 .fillMaxWidth()
         ) {
             Text(
-                text = "Add my futur task :-)", // Titre
+                text = "Add my futur task ",
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -124,13 +124,25 @@ fun TaskForm(
                     .fillMaxWidth()
                     .height(56.dp)
             ) {
-                IconButton(
-                    onClick = { openDialog.value = true },
-                    modifier = Modifier.align(Alignment.TopStart)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.DateRange, contentDescription = "Calender")
+                    IconButton(
+                        onClick = { openDialog.value = true },
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    ) {
+                        Icon(Icons.Default.DateRange, contentDescription = "Calender")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = selectedDate.value?.let { date ->
+                            SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(date)
+                        } ?: "Sélectionner une date",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
+
 
             Spacer(modifier = Modifier.height(16.dp))
             Row(
@@ -160,12 +172,13 @@ fun TaskForm(
 
         if (openDialog.value) {
             MaterialDialog(context).show {
-                dateTimePicker(requireFutureDateTime = true) { _, dateTime ->
+                dateTimePicker(requireFutureDateTime = true) { _, calendar ->
                     val selectedDateTime =
-                        SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(dateTime)
+                        SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(calendar.time)
                     Log.d("SelectedDateTime", selectedDateTime)
 
                     addTaskModel.setDeadline(selectedDateTime)
+                    selectedDate.value = calendar.time
                     openDialog.value = false
                 }
             }
@@ -173,6 +186,7 @@ fun TaskForm(
 
     }
 }
+
 
 data class Task(
     val title: String,
