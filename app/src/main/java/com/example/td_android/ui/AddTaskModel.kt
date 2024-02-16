@@ -33,6 +33,7 @@ import androidx.lifecycle.ViewModel
 import androidx.compose.ui.platform.LocalContext
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.dateTimePicker
+import com.example.td_android.data.Task
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -100,7 +101,7 @@ fun TaskForm(
                 .fillMaxWidth()
         ) {
             Text(
-                text = "Add my futur task ",
+                text = "\uD83D\uDCC5 Add my futur task ",
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -184,17 +185,5 @@ fun TaskForm(
             }
         }
 
-    }
-}
-
-
-data class Task(
-    val title: String,
-    val description: String,
-    val deadline: String,
-    val isImportant: Boolean
-) {
-    override fun toString(): String {
-        return "Task(title='$title', description='$description', deadline='$deadline', isImportant=$isImportant)"
     }
 }
