@@ -29,7 +29,8 @@ class AddTaskModel : ViewModel() {
 data class Task(
     var title: String = "",
     var description: String = "",
-    var deadline: String = ""
+    var deadline: String = "",
+    var isCompleted: Boolean = false
 )
 
 @Composable
