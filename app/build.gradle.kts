@@ -68,4 +68,6 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
     implementation ("com.afollestad.material-dialogs:datetime:3.3.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }
