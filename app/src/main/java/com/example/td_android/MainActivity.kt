@@ -159,11 +159,7 @@ fun HomeScreen(navController: NavController) {
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                         }
-                        CustomCheckbox(
-                            checked = task.attributes.completed,
-                            onCheckedChange = { /* Mettre à jour l'état de la tâche */ },
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
+                        CustomCheckbox()
                     }
                 }
             }
