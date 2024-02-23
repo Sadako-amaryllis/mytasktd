@@ -4,7 +4,13 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +25,7 @@ import com.example.td_android.ui.AddTaskModel
 import com.example.td_android.ui.TaskForm
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import com.example.td_android.ui.CustomCheckbox
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -40,7 +47,8 @@ data class TaskAttributes(
     val isImportant: Boolean,
     val createdAt: String,
     val updatedAt: String,
-    val publishedAt: String
+    val publishedAt: String,
+    val completed: Boolean,
 )
 
 data class Meta(
@@ -72,7 +80,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 }
-
 @Composable
 fun HomeScreen(navController: NavController) {
     val API_URL = "http://10.0.2.2:1337/"
@@ -101,7 +108,9 @@ fun HomeScreen(navController: NavController) {
     })
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -114,22 +123,43 @@ fun HomeScreen(navController: NavController) {
             )
             Text(
                 text = "No task today!",
-                modifier = Modifier.padding(18.dp)
+                modifier = Modifier.padding(18.dp),
+                style = MaterialTheme.typography.headlineLarge
             )
         } else {
             tasksState?.forEach { task ->
+                Text(
+                    text = "My Tasks \uD83D\uDC4B",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
                 Card(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(vertical = 8.dp)
                         .fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    Column(
+                    Row(
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        Text(text = task.attributes.title)
-                        Text(text = task.attributes.description)
-                        Text(text = task.attributes.deadline)
-                        // Add more task attributes as needed
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = task.attributes.title,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                            Text(
+                                text = task.attributes.description,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                            Text(
+                                text = task.attributes.deadline,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                        }
+                        CustomCheckbox()
                     }
                 }
             }
@@ -144,8 +174,8 @@ fun HomeScreen(navController: NavController) {
             Text("+")
         }
     }
-}
 
+}
 
 @Composable
 fun AddTaskScreen(
