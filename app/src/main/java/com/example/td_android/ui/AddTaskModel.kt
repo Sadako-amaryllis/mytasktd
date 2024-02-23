@@ -1,6 +1,5 @@
 package com.example.td_android.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -9,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.compose.ui.platform.LocalContext
@@ -22,16 +20,9 @@ class AddTaskModel : ViewModel() {
     var task by mutableStateOf(Task())
 
     fun createTask() {
-        // Implement task creation logic here
+        println(task)
     }
 }
-
-data class Task(
-    var title: String = "",
-    var description: String = "",
-    var deadline: String = "",
-    var isCompleted: Boolean = false
-)
 
 @Composable
 fun TaskForm(addTaskModel: AddTaskModel, modifier: Modifier = Modifier) {
@@ -44,6 +35,11 @@ fun TaskForm(addTaskModel: AddTaskModel, modifier: Modifier = Modifier) {
         .padding(16.dp), contentAlignment = Alignment.Center) {
         Card(shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "\uD83D\uDCC5 Add Task",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
                 InputField(value = addTaskModel.task.title, onValueChange = { addTaskModel.task = addTaskModel.task.copy(title = it) }, label = "Title")
                 Spacer(modifier = Modifier.height(16.dp))
                 InputField(value = addTaskModel.task.description, onValueChange = { addTaskModel.task = addTaskModel.task.copy(description = it) }, label = "Description")
