@@ -5,8 +5,10 @@ data class Tasks(
     val title: String,
     val description: String,
     val deadline: String,
-    val isImportant: Boolean,
-    val createdAt: String,
-    val updatedAt: String,
-    val publishedAt: String
+    val isCompleted: Boolean,
+)
+
+data class TaskData(
+    val id: Int,
+    val attributes: Tasks
 )

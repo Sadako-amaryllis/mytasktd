@@ -21,37 +21,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
+import com.example.td_android.TaskData
 
 
 data class ApiResponse(
     val data: List<TaskData>,
-    val meta: Meta
-)
-
-data class TaskData(
-    val id: Int,
-    val attributes: TaskAttributes
-)
-
-data class TaskAttributes(
-    val title: String,
-    val description: String,
-    val deadline: String,
-    val isImportant: Boolean,
-    val createdAt: String,
-    val updatedAt: String,
-    val publishedAt: String
-)
-
-data class Meta(
-    val pagination: Pagination
-)
-
-data class Pagination(
-    val page: Int,
-    val pageSize: Int,
-    val pageCount: Int,
-    val total: Int
 )
 
 class MainActivity : AppCompatActivity() {
@@ -73,11 +47,10 @@ class MainActivity : AppCompatActivity() {
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
-    val API_URL = "http://10.0.2.2:1337/"
-    val TAG = "CHECK_RESPONSE"
-
+    
     val api = Retrofit.Builder()
         .baseUrl(API_URL)
         .addConverterFactory(GsonConverterFactory.create())
@@ -90,8 +63,12 @@ fun HomeScreen(navController: NavController) {
         override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
             if (response.isSuccessful) {
                 val tasks = response.body()?.data // Access the data field
-                println("$TAG: onResponse: $tasks")
                 tasksState = tasks
+                for (task in tasks!!) {
+                    println("$TAG: onSuccess: ${task.attributes}")
+                }
+            } else {
+                println("$TAG: onERROR: ${response.errorBody()}")
             }
         }
 
@@ -122,14 +99,16 @@ fun HomeScreen(navController: NavController) {
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth(),
+//                    onClick = {
+//                        navController.navigate("task/${task.id}")
+//                    }
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        Text(text = task.attributes.title)
-                        Text(text = task.attributes.description)
-                        Text(text = task.attributes.deadline)
-                        // Add more task attributes as needed
+                        Text(text = "Titre: ${task.attributes.title}")
+                        Text(text = "Description: ${task.attributes.description}")
+                        Text(text = "Deadline: ${task.attributes.deadline}")
                     }
                 }
             }
