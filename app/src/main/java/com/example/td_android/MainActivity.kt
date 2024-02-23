@@ -1,11 +1,16 @@
 package com.example.td_android
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,8 +25,9 @@ import com.example.td_android.ui.AddTaskModel
 import com.example.td_android.ui.TaskForm
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import com.example.td_android.appBar.BottomBar
 import com.example.td_android.appBar.TopBar
-import com.example.td_android.ui.CustomCheckbox
+import com.example.td_android.checkbox.CustomCheckbox
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -31,22 +37,29 @@ data class ApiResponse(
 )
 
 class MainActivity : AppCompatActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            TopBar()
-            NavHost(navController, startDestination = "home") {
-                composable("home") {
-                    HomeScreen(navController)
+
+            Scaffold(
+                topBar = { TopBar() },
+                bottomBar = { BottomBar(navController) },
+                content = {
+                    NavHost(navController, startDestination = "home") {
+                        composable("home") {
+                            HomeScreen(navController)
+                        }
+                        composable("addTask") {
+                            AddTaskScreen(AddTaskModel())
+                        }
+                    }
                 }
-                composable("addTask") {
-                    AddTaskScreen(AddTaskModel())
-                }
-            }
+            )
         }
     }
-
 }
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -80,17 +93,7 @@ fun HomeScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (tasksState.isNullOrEmpty()) {
-            Image(
-                painter = painterResource(id = R.drawable.vecteezy_ete_vacances_plage_icone_illustration_ou_3d_ete_icone_21658663),
-                contentDescription = null,
-                modifier = Modifier.size(300.dp),
-                contentScale = ContentScale.Fit
-            )
-            Text(
-                text = "No task today!",
-                modifier = Modifier.padding(18.dp),
-                style = MaterialTheme.typography.headlineLarge
-            )
+            // Afficher le contenu lorsque la liste de tâches est vide
         } else {
             tasksState?.forEach { task ->
                 Text(
@@ -105,7 +108,8 @@ fun HomeScreen(navController: NavController) {
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Row(
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
@@ -125,11 +129,24 @@ fun HomeScreen(navController: NavController) {
                             )
                         }
                         CustomCheckbox()
+                        // Bouton Edit
+                        IconButton(
+                            onClick = { /* Action lorsque le bouton Edit est cliqué */ }
+                        ) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit icon")
+                        }
+                        // Bouton Delete
+                        IconButton(
+                            onClick = { /* Action lorsque le bouton Delete est cliqué */ }
+                        ) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete icon")
+                        }
                     }
                 }
             }
         }
 
+        // FloatingActionButton pour ajouter une nouvelle tâche
         FloatingActionButton(
             onClick = { navController.navigate("addTask") },
             modifier = Modifier
@@ -139,7 +156,6 @@ fun HomeScreen(navController: NavController) {
             Text("+")
         }
     }
-
 }
 
 @Composable
