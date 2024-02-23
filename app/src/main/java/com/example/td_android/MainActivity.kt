@@ -5,11 +5,6 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,21 +17,49 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.td_android.ui.AddTaskModel
 import com.example.td_android.ui.TaskForm
-import com.squareup.moshi.Json
-import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import retrofit2.*
+import retrofit2.converter.gson.GsonConverterFactory
 
+
+data class ApiResponse(
+    val data: List<TaskData>,
+    val meta: Meta
+)
+
+data class TaskData(
+    val id: Int,
+    val attributes: TaskAttributes
+)
+
+data class TaskAttributes(
+    val title: String,
+    val description: String,
+    val deadline: String,
+    val isImportant: Boolean,
+    val createdAt: String,
+    val updatedAt: String,
+    val publishedAt: String
+)
+
+data class Meta(
+    val pagination: Pagination
+)
+
+data class Pagination(
+    val page: Int,
+    val pageSize: Int,
+    val pageCount: Int,
+    val total: Int
+)
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-
             NavHost(navController, startDestination = "home") {
                 composable("home") {
                     HomeScreen(navController)
@@ -47,62 +70,73 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-}
 
-data class TaskResponse(
-    @Json(name = "tasks") val tasks: List<Task>
-)
-
-data class Task(
-    val id: Int,
-    val title: String,
-    val description: String
-)
-
-interface TaskApiService {
-    @Headers("Authorization: YOUR_API_KEY")
-    @GET("/api/tasks")
-    suspend fun getTasks(): TaskResponse
-}
-
-class TaskRepository {
-    private val apiService: TaskApiService
-
-    init {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://localhost:1337") // Use your actual base URL
-            .addConverterFactory(MoshiConverterFactory.create())
-            .build()
-
-        apiService = retrofit.create(TaskApiService::class.java)
-    }
-
-    suspend fun fetchTasks(): List<Task> = withContext(Dispatchers.IO) {
-        val taskResponse = apiService.getTasks()
-        println("Fetched tasks: ${taskResponse.tasks}") // Print fetched tasks for debugging
-        taskResponse.tasks
-    }
 }
 
 @Composable
 fun HomeScreen(navController: NavController) {
+    val API_URL = "http://10.0.2.2:1337/"
+    val TAG = "CHECK_RESPONSE"
+
+    val api = Retrofit.Builder()
+        .baseUrl(API_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(TaskerAPI::class.java)
+
+    var tasksState by remember { mutableStateOf<List<TaskData>?>(null) }
+
+    api.getTasks().enqueue(object : Callback<ApiResponse> {
+        override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+            if (response.isSuccessful) {
+                val tasks = response.body()?.data // Access the data field
+                println("$TAG: onResponse: $tasks")
+                tasksState = tasks
+            }
+        }
+
+        override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+            println("$TAG: onFailure: ${t.message}")
+        }
+    })
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.vecteezy_ete_vacances_plage_icone_illustration_ou_3d_ete_icone_21658663),
-            contentDescription = null,
-            modifier = Modifier.size(300.dp),
-            contentScale = ContentScale.Fit
-        )
-        Text(
-            text = "No task today!",
-            modifier = Modifier.padding(18.dp)
-        )
+        if (tasksState.isNullOrEmpty()) {
+            Image(
+                painter = painterResource(id = R.drawable.vecteezy_ete_vacances_plage_icone_illustration_ou_3d_ete_icone_21658663),
+                contentDescription = null,
+                modifier = Modifier.size(300.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = "No task today!",
+                modifier = Modifier.padding(18.dp)
+            )
+        } else {
+            tasksState?.forEach { task ->
+                Card(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(text = task.attributes.title)
+                        Text(text = task.attributes.description)
+                        Text(text = task.attributes.deadline)
+                        // Add more task attributes as needed
+                    }
+                }
+            }
+        }
+
         FloatingActionButton(
-            onClick =  { navController.navigate("addTask") },
+            onClick = { navController.navigate("addTask") },
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.End)
@@ -112,6 +146,7 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
+
 @Composable
 fun AddTaskScreen(
     addTaskModel: AddTaskModel
@@ -120,4 +155,3 @@ fun AddTaskScreen(
         TaskForm(addTaskModel = addTaskModel)
     }
 }
-
