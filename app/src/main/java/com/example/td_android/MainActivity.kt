@@ -4,13 +4,8 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +20,7 @@ import com.example.td_android.ui.AddTaskModel
 import com.example.td_android.ui.TaskForm
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import com.example.td_android.appBar.TopBar
 import com.example.td_android.ui.CustomCheckbox
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
@@ -35,11 +31,11 @@ data class ApiResponse(
 )
 
 class MainActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
+            TopBar()
             NavHost(navController, startDestination = "home") {
                 composable("home") {
                     HomeScreen(navController)
@@ -76,7 +72,6 @@ fun HomeScreen(navController: NavController) {
             println("$TAG: onFailure: ${t.message}")
         }
     })
-
     Column(
         modifier = Modifier
             .fillMaxSize()
